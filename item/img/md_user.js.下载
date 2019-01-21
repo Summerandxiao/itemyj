@@ -1,0 +1,716 @@
+﻿//用户操作
+
+//获取url的参数值
+function request(paras) {
+    var url = location.href;
+    var paraString = url.substring(url.indexOf("?") + 1, url.length).split("&");
+    var paraObj = {}
+    for (i = 0; j = paraString[i]; i++) {
+        paraObj[j.substring(0, j.indexOf("=")).toLowerCase()] = j.substring(j.indexOf("=") + 1, j.length);
+    }
+    var returnValue = paraObj[paras.toLowerCase()];
+    if (typeof (returnValue) == "undefined") {
+        return "";
+    } else {
+        return returnValue;
+    }
+}
+
+
+//存储cookie
+function setCookie(c_name, value, expiredays) {
+    var exdate = new Date()
+    exdate.setDate(exdate.getDate() + expiredays)
+    document.cookie = c_name + "=" + escape(value) +
+    ((expiredays == null) ? "" : ";expires=" + exdate.toGMTString())
+}
+
+function getCookie(c_name) {
+    if (document.cookie.length > 0) {
+        c_start = document.cookie.indexOf(c_name + "=")
+        if (c_start != -1) {
+            c_start = c_start + c_name.length + 1
+            c_end = document.cookie.indexOf(";", c_start)
+            if (c_end == -1) c_end = document.cookie.length
+            return unescape(document.cookie.substring(c_start, c_end))
+        }
+    }
+    return ""
+}
+
+//验证非空,是空返回true
+function isEmpty(v) {
+    switch (typeof v) {
+        case 'undefined':
+            return true;
+        case 'string':
+            if (v.replace(/(^[ \t\n\r]*)|([ \t\n\r]*$)/g, '').length == 0) return true;
+            break;
+        case 'boolean':
+            if (!v) return true;
+            break;
+        case 'number':
+            if (0 === v || isNaN(v)) return true;
+            break;
+        case 'object':
+            if (null === v || v.length === 0) return true;
+            for (var i in v) {
+                return false;
+            }
+            return true;
+    }
+    return false;
+}
+
+//验证护照号
+function checknumber(number)
+{
+    var str=number;
+    //在JavaScript中，正则表达式只能使用"/"开头和结束，不能使用双引号
+    var Expression = /(P\d{7})|(G\d{8})|(P\d{8})|(S\d{8})|(D\d{8})/;
+    var objExp=new RegExp(Expression);
+    if(objExp.test(str)==true)
+    {   
+        return true;
+    }else
+        return false;
+}
+
+function checkEmail(email_val)
+{
+    var search_str = /^[\w\-\.]+@[\w\-\.]+(\.\w+)+$/;    
+    if (!search_str.test(email_val)) {  
+        return false;
+    }
+    return true;
+}
+
+//用户注册
+function Doreg() {
+
+    var username = $("#tbxusername").val();
+    var password = $("#tbxpassword").val();
+    var password2 = $("#tbxpassword2").val();   
+    var tbxtelcode = $("#tbxtelcode").val();
+    var captcha = $("#captcha").val();
+    var openid = $("#openid").val();
+    var wicon = $("#wicon").val();
+
+    if (isEmpty(username) == true)
+    {
+        alert("请填写您的手机号！");
+        return;
+    } else
+    {
+        if (username.length < 10) {
+            alert("手机号长度不符合要求!");
+            return;
+        }
+    }
+    if (isEmpty(password) == true) {
+        alert("密码不能为空！");
+        return;
+    } else {
+        if (password.length <= 5) {
+            alert("密码必须超过6位!");
+            return;
+        }
+    }
+    if (password != password2) {
+        alert("前后密码不一致！");
+        return;
+    }
+    if (openid == "")
+    {
+        alert("系统错误,请联系商城管理员");
+        return;
+
+    }
+    //因为没有短信接口,暂时关闭验证
+    //if (isEmpty(captcha) == true) {
+    //    alert("请填写短信验证码！");
+    //    return;
+    //}
+    //记住用户名
+    //if (document.getElementById("autoLogin").checked) {
+    //    setCookie('username', username, 365);
+    //} else {
+    //    setCookie('username', '', 365);
+    //}
+
+
+
+    var datastr = "methodtype=userreg&username=" + username + "&password=" + password + "&tbxtelcode=" + tbxtelcode + "&openid=" + openid + "&wicon=" + wicon;
+    ;
+    $.ajax({
+        type: "POST",
+        beforeSend: function () { },
+        url: "../GetData.aspx",
+        dataType: 'text',
+        data: datastr,
+        beforeSend: function () {
+            $.showLoading();
+        },
+        complete: function () {
+            $.hideLoading();
+        },
+        success: function (data) {
+            var data = data.split("@@");
+            if (data[0] == "success") {
+
+                //追踪代码注册
+                var xmltext = new XMLHttpRequest;
+                xmltext.open("GET", "../retchatconfig.xml", false);
+                xmltext.send();
+                a = xmltext.responseXML;
+                var zzvalue = parseInt(a.getElementsByTagName("zz")[0].childNodes[0].nodeValue);
+                if (1 == zzvalue) {
+                    setCookie("retchatSME_account", openid, 30);
+                    //setCookie("retchatSME_account ", openid, 30)
+                    var target = new Image();
+                    var retUrlPrefix = "//r.retchat.com/tracking/";
+                    var retCert = "258a4dd6fd4d016da4320be836c31154";
+                    var retSiteId = 27;
+                    target.alt = "";
+                    target.src = "https://r.retchat.com/cksync/common/?ckType=2&a=27&retCrt=258a4dd6fd4d016da4320be836c31154&otherId=" + getCookie("retchatSME_account");
+
+                }
+                //跳入商城页面
+                //判断有kjid和openid_kanner，不为空跳到该砍价页面
+                var openid_kanner = $("#currentpage_openid_kanner").val();
+                var kjid = $("#currentpage_kjid").val();
+
+                if (isEmpty(kjid) == false && isEmpty(openid_kanner) == false) {
+                    window.location.href = "mmb_kanjia_bang.aspx?kjid=" + kjid + "&openid_kanner=" + openid_kanner;
+                } else {
+                    window.location.href = "shop_index.aspx";
+                }
+
+            } else if (data[0] == "sameusername")
+            {
+                alert("该手机已存在!");
+            } else if (data[0] == "verificationcodeiserror!") {
+                alert("短信验证码错误!");
+            } else if (data == "noquanxian") {
+                alert("对不起，您没有权限登入!");
+            } else {
+                alert("注册失败，请联系商城客服！");
+            }
+            
+        }, error: function (error) {
+            alert("Error:注册失败，请联系商城客服！");
+            $.hideLoading();
+        }
+    });
+}
+
+
+//用户注册
+function Doregpc() {
+
+    var username = $("#tbxusername").val();
+    var password = $("#tbxpassword").val();
+    var password2 = $("#tbxpassword2").val();
+
+    if (isEmpty(username) == true) {
+        alert("请填写您的手机号！");
+        return;
+    } else {
+        if (username.length < 10) {
+            alert("手机号长度不符合要求!");
+            return;
+        }
+    }
+    if (isEmpty(password) == true) {
+        alert("密码不能为空！");
+        return;
+    } else {
+        if (password.length <= 5) {
+            alert("密码必须超过6位!");
+            return;
+        }
+    }
+    if (password != password2) {
+        alert("前后密码不一致！");
+        return;
+    }
+
+
+
+    var datastr = "methodtype=userregpc&username=" + username + "&password=" + password;
+    ;
+    $.ajax({
+        type: "POST",
+        beforeSend: function () { },
+        url: "../GetData.aspx",
+        dataType: 'text',
+        data: datastr,
+        beforeSend: function () {
+            //$.showLoading();
+        },
+        complete: function () {
+            //$.hideLoading();
+        },
+        success: function (data) {
+            var data = data.split("@@");
+            if (data[0] == "success") {
+                //跳入商城页面
+                //判断有kjid和openid_kanner，不为空跳到该砍价页面
+                window.location.href = "yjgo_index.aspx";
+
+            } else if (data[0] == "sameusername") {
+                alert("该手机已存在!");
+            } else if (data[0] == "verificationcodeiserror!") {
+                alert("短信验证码错误!");
+            } else if (data == "noquanxian") {
+                alert("对不起，您没有权限登入!");
+            } else {
+                alert("注册失败，请联系商城客服！");
+            }
+
+        }, error: function (error) {
+            alert("Error:注册失败，请联系商城客服！");
+            $.hideLoading();
+        }
+    });
+}
+
+
+//登入也中的用户登入
+function DoLogin() {
+    var username = $("#tbxusername").val();
+    var password = $("#tbxpassword").val();
+    var yanzhengma = $("#tbxyanzhengma").val();
+    var openid = $("#openid").val();
+    var wicon = $("#wicon").val();
+    if (isEmpty(username) == true ||isEmpty(password) == true)
+    {
+        alert("用户名和密码不能为空!");
+        return;
+    }
+    //记住用户名
+    //if (document.getElementById("autoLogin").checked) {
+    //    setCookie('username', username, 365);
+    //} else
+    //{
+    //    setCookie('username', '', 365);
+    //}
+    //if (isEmpty(openid) == true)
+    //{
+    //    alert("Current system error!");
+    //    return;
+    //}
+    //var datastr = "methodtype=userlogin&username=" + username + "&openid=" + openid;
+    var datastr = "methodtype=userlogin&username=" + username + "&password=" + password + "&yanzhengma=" + yanzhengma + "&openid=" + openid + "&wicon=" + wicon;
+    $.ajax({
+        type: "POST",
+        beforeSend: function () { },
+        url: "../GetData.aspx",
+        dataType: 'text',
+        data: datastr,
+        beforeSend: function () {
+          //  $.showLoading();
+        },
+        complete: function () {
+          //  $.hideLoading();
+        },
+        success: function (data) {
+            var data = data.split("@@");
+            if (data[0] == "bangdingsuccess") {
+               // alert("登入成功!");                
+                //跳入商城页面
+                //判断有kjid和openid_kanner，不为空跳到该砍价页面
+                var openid_kanner = $("#currentpage_openid_kanner").val();
+                var kjid = $("#currentpage_kjid").val();
+                
+                if (isEmpty(kjid) == false && isEmpty(openid_kanner) == false)
+                {
+                    window.location.href = "mmb_kanjia_bang.aspx?kjid=" + kjid + "&openid_kanner=" + openid_kanner;
+                } else
+                {
+                    window.location.href = "shop_index.aspx";
+                }
+                
+            } else if (data[0] == "noreg") {
+                alert("账号或密码错误!");
+            } else if (data[0] == "yanzhengmaerror")
+            {
+                alert("验证码错误");
+            } else if (data[0] == "yicunzaibangding") {
+                alert("该用户已用其他微信进行绑定，请先在那个微信上的商城里解绑后再在此登入！");
+            }
+        }, error: function (error) {
+            alert("Error:登入失败！");
+        }
+    });
+}
+
+//存cookie方法
+function setCookie(c_name, value, expiredays) {
+    var exdate = new Date()
+    exdate.setDate(exdate.getDate() + expiredays)
+    document.cookie = c_name + "=" + escape(value) +
+    ((expiredays == null) ? "" : ";expires=" + exdate.toGMTString())
+}
+
+//登入也中的用户登入
+function DoLoginpc() {
+    var username = $("#tbxusername").val();
+    var password = $("#tbxpassword").val();
+    var yanzhengma = $("#tbxyanzhengma").val();
+    if (isEmpty(username) == true || isEmpty(password) == true) {
+        alert("用户名和密码不能为空!");
+        return;
+    }
+    var datastr = "methodtype=userlogin_pc&username=" + username + "&password=" + password + "&yanzhengma=" + yanzhengma;
+    $.ajax({
+        type: "POST",
+        beforeSend: function () { },
+        url: "../GetData.aspx",
+        dataType: 'text',
+        data: datastr,
+        beforeSend: function () {
+         //   $.showLoading();
+        },
+        complete: function () {
+         //   $.hideLoading();
+        },
+        success: function (data) {
+            var data = data.split("@@");
+            if (data[0] == "bangdingsuccess") {
+                //跳入商城页面
+                window.location.href = "yjgo_index.aspx";
+
+            } else if (data[0] == "noreg") {
+                alert("账号或密码错误!");
+            } else if (data[0] == "yanzhengmaerror") {
+                alert("验证码错误");
+            } else if (data[0] == "yicunzaibangding") {
+                alert("该用户已用其他微信进行绑定，请先在那个微信上的商城里解绑后再在此登入！");
+            }
+        }, error: function (error) {
+            alert("Error:登入失败！");
+        }
+    });
+}
+
+
+//侧边栏中的用户登入
+function DoLogin_right() {
+    var username = $("#tbxusername").val();
+    var password = $("#tbxpassword").val();
+    var yanzhengma = $("#tbxyanzhengma").val();
+    var openid = "";
+    if (isEmpty(username) == true || isEmpty(password) == true) {
+        alert("用户名和密码不能为空!");
+        return;
+    }    
+    //if (isEmpty(openid) == true)
+    //{
+    //    alert("Current system error!");
+    //    return;
+    //}
+    //var datastr = "methodtype=userlogin&username=" + username + "&openid=" + openid;
+    var datastr = "methodtype=userlogin_pc&username=" + username + "&password=" + password + "&yanzhengma=" + yanzhengma;
+    $.ajax({
+        type: "POST",
+        beforeSend: function () { },
+        url: "../GetData.aspx",
+        dataType: 'text',
+        data: datastr,
+        beforeSend: function () {
+         //   $.showLoading();
+        },
+        complete: function () {
+          //  $.hideLoading();
+        },
+        success: function (data) {
+            var data = data.split("@@");
+            if (data[0] == "bangdingsuccess") {
+                //$("#userlogin").show();
+                //$("#usernologin").hide();   
+                document.getElementById("car_numshow").innerHTML = data[1];
+                location.reload();
+            } else if (data[0] == "noreg") {
+                alert("账号或密码错误!");
+            } else if (data[0] == "yanzhengmaerror") {
+                alert("验证码错误");
+            }
+        }, error: function (error) {
+            alert("Error:登入失败！");
+        }
+    });
+}
+
+
+function DoLoginUsercenter()
+{
+    window.open('yjgo_usercenter.aspx')
+   // window.location.href = "yjgo_usercenter.aspx";
+  //  window.location.href = "yjgo_usercenter_orderlist.aspx"
+}
+
+
+
+
+
+//管理员操作
+//管理员修改会员信息
+function Doadminbianji()
+{
+    var id = $("#tbxid").val();
+    var password = $("#tbxpassword").val();
+    var email = $("#tbxemail").val();
+    //var tiwen = $("#ddltiwen").val();
+    //var huida = $("#tbxhuida").val();
+    var realname = $("#tbxrealname").val();
+    var xingbie = $("input[name=rblxingbie]:checked").val();
+    //var age = $("#tbxage").val();
+    var shengri = $("#tbxshengri").val();
+    var tel = $("#tbxtel").val();
+    var guojia = $("#tbxguojia").val();
+    //var zhengjianleibie = $("#ddlzhengjianleibie").val();
+    //var zhengjianhaoma = $("tbxzhengjianhaoma").val();
+    var tiwen = "";
+    var huida = "";
+    var age = "";
+    var zhengjianleibie = "";
+    var zhengjianhaoma = "";
+
+
+    var datastr = "methodtype=Doadminbianji&password=" + password + "&email=" + email + "&tiwen=" +
+        tiwen + "&huida=" + huida + "&realname=" + realname + "&xingbie=" + xingbie + "&age=" + age + "&shengri=" + shengri + "&tel=" +
+        tel + "&guojia=" + guojia + "&zhengjianleibie=" + zhengjianleibie + "&zhengjianhaoma=" + zhengjianhaoma + "&id=" + id;
+    $.ajax({
+        type: "POST",
+        beforeSend: function () { },
+        url: "../GetData.aspx",
+        dataType: 'text',
+        data: datastr,
+        beforeSend: function () {
+            $.showLoading();
+        },
+        complete: function () {
+            $.hideLoading();
+        },
+        success: function (data) {
+            if (data == "success") {
+                alert("Registered successfully, please login!");
+                //跳入login页面
+                window.location.href = "userlogin.aspx";
+            } else if (data == "sameusername") {
+                alert("User name already exists!");
+            } else {
+                alert("Registered Failure");
+            }
+        }, error: function (error) {
+            alert("Error:Registered Failure！");
+        }
+    });
+}
+
+//用户找回密码 email
+function DoFindPassword() {
+    var email = $("#email").val();
+    //var openid = $("#openid").val();
+    if (isEmpty(email) == true || isEmpty(email) == true) {
+        alert("Please enter your email!");
+        return;
+    }
+    //if (isEmpty(openid) == true)
+    //{
+    //    alert("Current system error!");
+    //    return;
+    //}
+    //var datastr = "methodtype=userlogin&username=" + username + "&openid=" + openid;
+    var datastr = "methodtype=userfindpassword_sendemail&email=" + email;
+    $.ajax({
+        type: "POST",
+        beforeSend: function () { },
+        url: "../GetData.aspx",
+        dataType: 'text',
+        data: datastr,
+        beforeSend: function () {
+            $.showLoading();
+        },
+        complete: function () {
+            $.hideLoading();
+        },
+        success: function (data) {
+            if (data) {
+                //显示用户密码发送结果
+                $("#result").html(data);
+            } else {
+                //显示系统错误
+                $("#result").html("<font color='red'>System Error:Please contact the site administrator！</font>");
+            }
+        }, error: function (error) {
+            //显示系统错误
+            $("#result").html("<font color='red'>System Error:Please contact the site administrator！</font>");
+        }
+    });
+}
+
+
+
+////用户找回密码 sms
+//function DoFindPasswordBySMS(yanzhengma) {
+//    var tel = $("#tel").val();
+
+//    //var openid = $("#openid").val();
+//    //if (isEmpty(tel) == true || isEmpty(tel) == true) {
+//    //    alert("Please enter your tel!");
+//    //    return;
+//    //}
+//    //if (isEmpty(openid) == true)
+//    //{
+//    //    alert("Current system error!");
+//    //    return;
+//    //}
+//    //var datastr = "methodtype=userlogin&username=" + username + "&openid=" + openid;
+
+//    var datastr = "methodtype=userfindpassword_sendsms&tel=" + tel + "&yanzhengma=" + yanzhengma;
+//    $.ajax({
+//        type: "POST",
+//        beforeSend: function () { },
+//        url: "../GetData.aspx",
+//        dataType: 'text',
+//        data: datastr,
+//        beforeSend: function () {
+//          //  showLoader();
+//        },
+//        complete: function () {
+//         //   hideLoader();
+//        },
+//        success: function (data) {
+//            if (data == "success") {
+//                //显示用户密码发送结果
+//                alert("新密码短信发送成功！");
+//            }else if(data=="yanzhengmacuowu"){
+//                //显示系统错误
+//                alert("验证码错误!");
+                
+//            } else {
+//                //显示系统错误
+//                alert("Error:短信发送失败！");
+//            }
+//        }, error: function (error) {
+//            //显示系统错误
+//            alert("Error:短信发送失败！");
+//        }
+//    });
+//}
+
+//function SendCheckCode()
+//{
+//    var tel = $("#tbxusername").val();
+//    //if (isEmpty(tel) == true || isEmpty(tel) == true) {
+//    //    alert("请填写手机号!");
+//    //    return;
+//    //}
+//    var datastr = "methodtype=checkcode_sendsms&tel=" + tel;
+//    $.ajax({
+//        type: "POST",
+//        beforeSend: function () { },
+//        url: "../GetData.aspx",
+//        dataType: 'text',
+//        data: datastr,
+//        beforeSend: function () {
+//          //  showLoader();
+//        },
+//        complete: function () {
+//           // hideLoader();
+//        },
+//        success: function (data) {
+//            if (data == "success") {
+//                //显示发送结果
+//                alert("短信发送成功！");
+//            } else {
+//                //显示系统错误
+//                alert("Error:短信发送失败！");
+              
+//            }
+//        }, error: function (error) {
+//            //显示系统错误
+//            alert("Error:短信发送失败！");
+//        }
+//    });
+//}
+
+
+//function setCookie(c_name, value, expiredays) {
+//    var exdate = new Date()
+//    exdate.setDate(exdate.getDate() + expiredays)
+//    document.cookie = c_name + "=" + escape(value) +
+//    ((expiredays == null) ? "" : ";expires=" + exdate.toGMTString())
+//}
+
+//function getCookie(c_name) {
+//    if (document.cookie.length > 0) {
+//        c_start = document.cookie.indexOf(c_name + "=")
+//        if (c_start != -1) {
+//            c_start = c_start + c_name.length + 1
+//            c_end = document.cookie.indexOf(";", c_start)
+//            if (c_end == -1) c_end = document.cookie.length
+//            return unescape(document.cookie.substring(c_start, c_end))
+//        }
+//    }
+//    return ""
+//}
+
+
+function checkCookie() {
+    username = getCookie('username')
+    if (username != null && username != "")
+    {
+        $("#tbxusername").val(username);
+    }
+}
+
+
+
+
+
+
+//登入也中的用户登入
+function changeVCode() {
+    var datastr = "methodtype=changeVCode";
+    $.ajax({
+        type: "POST",
+        beforeSend: function () { },
+        url: "../GetData.aspx",
+        dataType: 'text',
+        data: datastr,
+        beforeSend: function () {
+           // $.showLoading();
+        },
+        complete: function () {
+           // $.showLoading();
+        },
+        success: function (data) {
+            var timestamp = new Date().getTime();
+            document.getElementById("imgvcode").src = "ValidateCode.aspx?num=" + timestamp;
+        }, error: function (error) {
+            alert("Error！");
+        }
+    });
+}
+
+
+$('#regbtn').click(function () {
+    var load = new Loading();
+    load.init({
+        target: this
+    });
+    load.start();
+    setTimeout(function () {
+        load.stop();
+    }, 3000)
+});
+
+
+
+
+
+
+

@@ -1,0 +1,104 @@
+﻿//用户操作
+
+//获取url的参数值
+function request(paras) {
+    var url = location.href;
+    var paraString = url.substring(url.indexOf("?") + 1, url.length).split("&");
+    var paraObj = {}
+    for (i = 0; j = paraString[i]; i++) {
+        paraObj[j.substring(0, j.indexOf("=")).toLowerCase()] = j.substring(j.indexOf("=") + 1, j.length);
+    }
+    var returnValue = paraObj[paras.toLowerCase()];
+    if (typeof (returnValue) == "undefined") {
+        return "";
+    } else {
+        return returnValue;
+    }
+}
+
+//验证非空,是空返回true
+function isEmpty(v) {
+    switch (typeof v) {
+        case 'undefined':
+            return true;
+        case 'string':
+            if (v.replace(/(^[ \t\n\r]*)|([ \t\n\r]*$)/g, '').length == 0) return true;
+            break;
+        case 'boolean':
+            if (!v) return true;
+            break;
+        case 'number':
+            if (0 === v || isNaN(v)) return true;
+            break;
+        case 'object':
+            if (null === v || v.length === 0) return true;
+            for (var i in v) {
+                return false;
+            }
+            return true;
+    }
+    return false;
+}
+
+/**参数说明：
+     * 根据长度截取先使用字符串，超长部分追加…
+     * str 对象字符串
+     * len 目标字节长度
+     * 返回值： 处理结果字符串
+     */
+function cutString(str, len) {
+    //length属性读出来的汉字长度为1
+    if (str.length * 2 <= len) {
+        return str;
+    }
+    var strlen = 0;
+    var s = "";
+    for (var i = 0; i < str.length; i++) {
+        s = s + str.charAt(i);
+        if (str.charCodeAt(i) > 128) {
+            strlen = strlen + 2;
+            if (strlen >= len) {
+                return s.substring(0, s.length - 1) + "...";
+            }
+        } else {
+            strlen = strlen + 1;
+            if (strlen >= len) {
+                return s.substring(0, s.length - 2) + "...";
+            }
+        }
+    }
+    return s;
+}
+
+
+$(document).ready(function () {
+    //去空格
+    String.prototype.Trim = function () {
+        var m = this.match(/^\s*(\S+(\s+\S+)*)\s*$/);
+        return (m == null) ? "" : m[1];
+    }
+
+    
+
+});
+
+
+function DoSearchKeyWord()
+{
+    var keyword = $("#keyword").val();
+    window.location.href = "yjgo_product_list.aspx?keyword=" + keyword;
+}
+
+function DoSearchKeyWord2() {
+    var keyword = $("#keyword2").val();
+    window.location.href = "yjgo_product_list.aspx?keyword=" + keyword;
+}
+
+
+
+
+
+
+
+
+

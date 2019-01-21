@@ -1,0 +1,355 @@
+﻿//用户操作
+
+//获取url的参数值
+function request(paras) {
+    var url = location.href;
+    var paraString = url.substring(url.indexOf("?") + 1, url.length).split("&");
+    var paraObj = {}
+    for (i = 0; j = paraString[i]; i++) {
+        paraObj[j.substring(0, j.indexOf("=")).toLowerCase()] = j.substring(j.indexOf("=") + 1, j.length);
+    }
+    var returnValue = paraObj[paras.toLowerCase()];
+    if (typeof (returnValue) == "undefined") {
+        return "";
+    } else {
+        return returnValue;
+    }
+}
+
+//验证非空,是空返回true
+function isEmpty(v) {
+    switch (typeof v) {
+        case 'undefined':
+            return true;
+        case 'string':
+            if (v.replace(/(^[ \t\n\r]*)|([ \t\n\r]*$)/g, '').length == 0) return true;
+            break;
+        case 'boolean':
+            if (!v) return true;
+            break;
+        case 'number':
+            if (0 === v || isNaN(v)) return true;
+            break;
+        case 'object':
+            if (null === v || v.length === 0) return true;
+            for (var i in v) {
+                return false;
+            }
+            return true;
+    }
+    return false;
+}
+
+/**参数说明：
+     * 根据长度截取先使用字符串，超长部分追加…
+     * str 对象字符串
+     * len 目标字节长度
+     * 返回值： 处理结果字符串
+     */
+function cutString(str, len) {
+    //length属性读出来的汉字长度为1
+    if (str.length * 2 <= len) {
+        return str;
+    }
+    var strlen = 0;
+    var s = "";
+    for (var i = 0; i < str.length; i++) {
+        s = s + str.charAt(i);
+        if (str.charCodeAt(i) > 128) {
+            strlen = strlen + 2;
+            if (strlen >= len) {
+                return s.substring(0, s.length - 1) + "...";
+            }
+        } else {
+            strlen = strlen + 1;
+            if (strlen >= len) {
+                return s.substring(0, s.length - 2) + "...";
+            }
+        }
+    }
+    return s;
+}
+
+
+$(document).ready(function () {
+    //去空格
+    String.prototype.Trim = function () {
+        var m = this.match(/^\s*(\S+(\s+\S+)*)\s*$/);
+        return (m == null) ? "" : m[1];
+    }
+
+    var tmpstr = "<ul class='groUlOut' id='yes_fq_ul'>";
+    tmpstr += "<li class='pro_list'>";
+    tmpstr += "<div class='fg_x'>1</div>";
+    tmpstr += "<img style='' src='../images/lazy_defaut.gif' />";
+    tmpstr += "</a>";
+    tmpstr += "<p class='box_glay'>";
+    tmpstr += "<span>载入中...</span>";
+    tmpstr += "</p>";
+    tmpstr += "<div class='now_price'>";
+    tmpstr += "<div class='price_l'>";
+    tmpstr += "<span class='bigfont'><span class='f_14'>￥</span><span>载入中...</span></span>";
+    tmpstr += "</div>";
+    tmpstr += "</div>";
+    tmpstr += "</li>";
+
+    tmpstr += "<li class='pro_list'>";
+    tmpstr += "<div class='fg_x'>2</div>";
+    tmpstr += "<img style='' src='../images/lazy_defaut.gif' />";
+    tmpstr += "</a>";
+    tmpstr += "<p class='box_glay'>";
+    tmpstr += "<span>载入中...</span>";
+    tmpstr += "</p>";
+    tmpstr += "<div class='now_price'>";
+    tmpstr += "<div class='price_l'>";
+    tmpstr += "<span class='bigfont'><span class='f_14'>￥</span><span>载入中...</span></span>";
+    tmpstr += "</div>";
+    tmpstr += "</div>";
+    tmpstr += "</li>";
+
+    tmpstr += "<li class='pro_list'>";
+    tmpstr += "<div class='fg_x'>3</div>";
+    tmpstr += "<img style='' src='../images/lazy_defaut.gif' />";
+    tmpstr += "</a>";
+    tmpstr += "<p class='box_glay'>";
+    tmpstr += "<span>载入中...</span>";
+    tmpstr += "</p>";
+    tmpstr += "<div class='now_price'>";
+    tmpstr += "<div class='price_l'>";
+    tmpstr += "<span class='bigfont'><span class='f_14'>￥</span><span>载入中...</span></span>";
+    tmpstr += "</div>";
+    tmpstr += "</div>";
+    tmpstr += "</li>";
+
+    tmpstr += "<li class='pro_list'>";
+    tmpstr += "<div class='fg_x'>4</div>";
+    tmpstr += "<img style='' src='../images/lazy_defaut.gif' />";
+    tmpstr += "</a>";
+    tmpstr += "<p class='box_glay'>";
+    tmpstr += "<span>载入中...</span>";
+    tmpstr += "</p>";
+    tmpstr += "<div class='now_price'>";
+    tmpstr += "<div class='price_l'>";
+    tmpstr += "<span class='bigfont'><span class='f_14'>￥</span><span>载入中...</span></span>";
+    tmpstr += "</div>";
+    tmpstr += "</div>";
+    tmpstr += "</li>";
+
+    tmpstr += "<li class='pro_list'>";
+    tmpstr += "<div class='fg_x'>5</div>";
+    tmpstr += "<img style='' src='../images/lazy_defaut.gif' />";
+    tmpstr += "</a>";
+    tmpstr += "<p class='box_glay'>";
+    tmpstr += "<span>载入中...</span>";
+    tmpstr += "</p>";
+    tmpstr += "<div class='now_price'>";
+    tmpstr += "<div class='price_l'>";
+    tmpstr += "<span class='bigfont'><span class='f_14'>￥</span><span>载入中...</span></span>";
+    tmpstr += "</div>";
+    tmpstr += "</div>";
+    tmpstr += "</li>";
+
+    tmpstr += "</ul>";
+
+    //今/昨 日直播
+    function jirizhibolist(isjinri) {
+        $("#jirizhibolistmore").html(tmpstr);
+        $("#zuorizhibolistmore").html("商品载入中......");
+        var datastr = "methodtype=jirizhibolist&isjinri=" + isjinri;
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "../GetData.aspx",
+            data: datastr,
+            success: function (json) {
+                var str = "<script type=\"application/javascript\" src=\"../js/yjgo/jquery.SuperSlide.2.1.1.js\"></script>";
+                str += "<script type=\"application/javascript\" src=\"../js/yjgo/jquery.indexCountDown.js\"></script>";
+                str += "<script type=\"application/javascript\" src=\"../js/yjgo/index.js?v=3\"></script>";
+                str += "<ul class='groUlOut' id='yes_fq_ul'>";
+                $.each(json, function (index, array) {
+                    index++;
+                    str += "<li class='pro_list'>";
+                    str += "<div class='fg_x'>" + index + "</div>";
+                    str += "<a class='pro' title="+array['name']+" href=yjgo_product.aspx?skn="+array['skn']+" target='_blank'>";
+                    str += "<img style='' src=\"../admin/uploadfile/"+getImgIsNull(array['imgname'])+"\" alt=\""+array['name']+"\" />";
+                    str += "</a>";
+                    str += "<p class='box_glay'>";
+                    str += "<a class='pro_text' title="+array['name']+" href=yjgo_product.aspx?skn="+array['skn']+" target='_blank'>";
+                    str += "<span>"+array['name']+"</span>";
+                    str += "</a>";
+                    str += "</p>";
+                   // str += "<p class='p_num'>" + array['skn'] + "</p>";
+                    str += "<div class='now_price'>";
+                    str += "<div class='price_l'>";
+                    str += "<span class='bigfont'><span class='f_14'>￥</span><span>" + array['price'] + "</span></span>";
+                 //   str += "<span><del>￥299.00</del></span>";
+                    str += "</div>";
+                  //  str += "<div class="zk">6.7折</div>";
+                    str += "</div>";
+                    str += "</li>";
+                });
+                str += "</ul>";
+                if (isjinri == 1)
+                {
+                   // $("#jirizhibolistmore").append(str);
+                    $("#jirizhibolistmore").html(str);
+                }else
+                {
+                    //$("#zuorizhibolistmore").append(str);
+                    $("#zuorizhibolistmore").html(str);
+                }
+            }
+        });
+    }
+
+    jirizhibolist(1);
+    jirizhibolist(2);
+
+
+    var tmpstr2 = "";
+    tmpstr2 += "<div>";
+    tmpstr2 += "<ul class=\"mryh_goods ClearFix\">";
+    tmpstr2 += "<li>";    
+    tmpstr2 += "<p class='p_img'>";
+    tmpstr2 += "<img id='goods_image_" + Math.ceil(Math.random() * 1000) + "' original=\"../images/lazy_default.gif\" src=\"../images/lazy_defaut.gif\" />";
+    tmpstr2 += "</p>";
+    tmpstr2 += "<p class='p_title'>";
+    //   str += "<span>【6.7折】</span>";
+    tmpstr2 += "加载中...";
+    tmpstr2 += "</p>";
+    tmpstr2 += "<p class='p_p'>";
+    tmpstr2 += "<span class='price1'>￥<span>加载中...</span></span>";
+    // str += "<span class=\"price2\"><del>￥1,499</del></span>";
+    tmpstr2 += "</p>";
+    tmpstr2 += "</li>";
+
+    tmpstr2 += "<li>";
+    tmpstr2 += "<p class='p_img'>";
+    tmpstr2 += "<img id='goods_image_" + Math.ceil(Math.random() * 1000) + "' original=\"../images/lazy_default.gif\" src=\"../images/lazy_defaut.gif\" />";
+    tmpstr2 += "</p>";
+    tmpstr2 += "<p class='p_title'>";
+    //   str += "<span>【6.7折】</span>";
+    tmpstr2 += "加载中...";
+    tmpstr2 += "</p>";
+    tmpstr2 += "<p class='p_p'>";
+    tmpstr2 += "<span class='price1'>￥<span>加载中...</span></span>";
+    // str += "<span class=\"price2\"><del>￥1,499</del></span>";
+    tmpstr2 += "</p>";
+    tmpstr2 += "</li>";
+
+    tmpstr2 += "<li>";
+    tmpstr2 += "<p class='p_img'>";
+    tmpstr2 += "<img id='goods_image_" + Math.ceil(Math.random() * 1000) + "' original=\"../images/lazy_default.gif\" src=\"../images/lazy_defaut.gif\" />";
+    tmpstr2 += "</p>";
+    tmpstr2 += "<p class='p_title'>";
+    //   str += "<span>【6.7折】</span>";
+    tmpstr2 += "加载中...";
+    tmpstr2 += "</p>";
+    tmpstr2 += "<p class='p_p'>";
+    tmpstr2 += "<span class='price1'>￥<span>加载中...</span></span>";
+    // str += "<span class=\"price2\"><del>￥1,499</del></span>";
+    tmpstr2 += "</p>";
+    tmpstr2 += "</li>";
+
+    tmpstr2 += "<li>";
+    tmpstr2 += "<p class='p_img'>";
+    tmpstr2 += "<img id='goods_image_" + Math.ceil(Math.random() * 1000) + "' original=\"../images/lazy_default.gif\" src=\"../images/lazy_defaut.gif\" />";
+    tmpstr2 += "</p>";
+    tmpstr2 += "<p class='p_title'>";
+    //   str += "<span>【6.7折】</span>";
+    tmpstr2 += "加载中...";
+    tmpstr2 += "</p>";
+    tmpstr2 += "<p class='p_p'>";
+    tmpstr2 += "<span class='price1'>￥<span>加载中...</span></span>";
+    // str += "<span class=\"price2\"><del>￥1,499</del></span>";
+    tmpstr2 += "</p>";
+    tmpstr2 += "</li>";
+    tmpstr2 += "</ul>";
+    tmpstr2 += "</div>";
+
+    //今日发现
+    function init_1(count, start, category_type) {
+        $("#more_1").html(tmpstr2);
+        var datastr = "methodtype=GetMorejinrifaxian&count=" + count + "&start=" + start + "&category_type=" + category_type;
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "../GetData.aspx",
+            data: datastr,
+            beforeSend: function () { $("#divload").show(); $("#moreclick").hide(); },
+            complete: function () { $("#divload").hide(); $("#moreclick").show(); },
+            success: function (json) {
+                var str = "";
+                str += "<div>";
+                str += "<ul class=\"mryh_goods ClearFix\">";
+                $.each(json, function (index, array) {
+                    if (category_type == "1") {
+                        str += "<li>";
+                        str += "<a href=\"yjgo_product.aspx?skn=" + array['skn'] + "\" class='a_con4_list'  target='_blank'>";
+                        str += "<p class='p_img'>";
+                        str += "<img id='goods_image_" + Math.ceil(Math.random() * 1000) + "' original=\"../images/lazy_default.gif\" src=\"../admin/uploadfile/" + getImgIsNull(array['imgname']) + "\" />";
+                        str += "</p>";
+                        str += "</a>";
+                        str += "<p class='p_title'>";
+                        //   str += "<span>【6.7折】</span>";
+                        str += "<a href=\"yjgo_product.aspx?skn=" + array['skn'] + "\" class='a_con4_list'  target='_blank'>";
+                        str += cutString(array['name'], 61);
+                        str += "</a>";
+                        str += "</p>";
+                        str += "<p class='p_p'>";
+                        str += "<span class='price1'>￥<span>"+array['price']+"</span></span>";
+                       // str += "<span class=\"price2\"><del>￥1,499</del></span>";
+                        str += "</p>";
+                        str += "</li>";
+                    }else 
+                    {
+
+                    }
+                });
+                str += "</ul>";
+                str += "</div>";
+                
+                //$("#more_1").append(str);
+                $("#more_1").html(str);
+                if (json == "") {
+                    $("#moreclick").html("No more content loaded");
+                }
+            }
+        });
+    }
+
+    var count = 20;
+    var start = 0;
+    init_1(count, start,1);
+    $("#moreclick").click(function () {
+        start += 8;
+        init_1(count, start,1);
+    });
+
+
+    function getImgIsNull(imgname)
+    {
+        if(isEmpty(imgname))
+        {
+            return "lazy_defaut";
+        }else
+        {
+            return imgname;
+        }
+    }
+
+
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
