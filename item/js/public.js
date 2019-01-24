@@ -95,23 +95,10 @@ $(".user_center_a").hover( function(){
 		$(this).css("background","");
 	} )
 //点击top回到顶部
-$(".f_c_stop").click(function(){
-	$("body,html").animate({"srollTop":0},1000)
+$(".f_c_stop").find(".iconfont").click(function(){
+		$("body,html").animate({"scrollTop":0},1000,)
 })
-//吸顶搜索栏
-$(window).scroll(function(){
-	var sTop = document.documentElement.scrollTop || document.body.scrollTop ;
-	var h = 300;
-	if(sTop > h){
-		$(".dao").slideDown();
-		$(".dao").css({
-			"position":"fixed",
-			"top":0  
-		})
-	}else{
-		$(".dao").slideUp();
-	}
-})
+
 //在线客服特效
 $(".tuo").click(function(){
 	$(".online").hide();
@@ -121,3 +108,4 @@ $(".mg").click(function(){
 	$(".online").show();
 	$(".kuai").hide();
 })
+

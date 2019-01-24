@@ -1,0 +1,217 @@
+@charset "UTF-8";
+* {
+  padding: 0;
+  margin: 0; }
+
+li {
+  list-style: none; }
+
+a {
+  text-decoration: none;
+  color: #9A9A9A; }
+
+i {
+  font-style: normal; }
+
+img {
+  display: block; }
+
+.logo {
+  height: 200px;
+  width: 1210px;
+  margin: 0 auto; }
+  .logo img {
+    padding-top: 55px;
+    padding-left: 70px; }
+
+/*注册处*/
+/*.register {
+    width: 1210px;
+    height: 400px;
+    margin: 0 auto;
+    ul {
+        width: 367px;
+        height: 400px;
+        float: right;
+        li:nth-child(1) {
+            height: 38px;
+            line-height: 38px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            h3 {
+                color: #C42C33;
+                font-size: 22px;
+            }
+            p {
+                font-size: 12px;
+                color: #8C8C8C;
+                a {
+                    color: #C42C33;
+                }
+            }
+        }
+        li {
+            margin-left: 50px;
+            span {
+                width: 293px;
+                height: 46px;
+                line-height: 46px;
+                display: flex;
+                justify-content: space-between;
+                i {
+                    font-family: "微软雅黑", "宋体", "arial", "Hiragino Sans GB", "Microsoft Yahei", "Tahoma", "Helvetica", "STHeiti";
+                    font-size: 12px;
+                    input {
+                        margin-right: 5px;
+                    }
+                }
+                a {
+                    font-size: 12px;
+                    color: #595959;
+                }
+            }
+        }
+    }
+}
+
+.thesame {
+    height: 25px;
+    width: 293px;
+    font-size: 12px;
+    line-height: 25px;
+    padding: 6px 0 6px 6px;
+    color: #333333;
+    border: 1px solid #C8C8C8;
+}
+
+.pwd {
+    margin-top: 50px;
+    margin-bottom: 10px;
+}
+
+.sub{
+       width:302px;
+       height:40px;
+       line-height:40px;
+       text-align:center;
+       color:#fff;
+       font-size:14px;
+       font-family:"宋体";
+       background:#94193f;
+       border:none;
+       cursor:pointer;
+       &:hover{
+           background:#A82045;
+       }
+}*/
+.register {
+  width: 1200px;
+  height: 400px;
+  margin: 0 auto; }
+  .register ul {
+    width: 367px;
+    height: 400px;
+    float: right; }
+    .register ul li {
+      margin-left: 50px; }
+      .register ul li span {
+        font-size: 12px;
+        width: 5px;
+        height: 5px;
+        padding-left: 5px; }
+    .register ul li:nth-child(1) {
+      width: 330px;
+      height: 38px;
+      line-height: 38px;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px; }
+      .register ul li:nth-child(1) h3 {
+        color: #C42C33;
+        font-size: 22px; }
+      .register ul li:nth-child(1) p {
+        font-size: 12px;
+        color: #8C8C8C; }
+        .register ul li:nth-child(1) p a {
+          color: #C42C33; }
+    .register ul li:nth-child(2) {
+      width: 350px; }
+      .register ul li:nth-child(2) input {
+        height: 25px;
+        width: 293px;
+        font-size: 12px;
+        line-height: 25px;
+        padding: 6px 0 6px 6px;
+        color: #333333;
+        border: 1px solid #C8C8C8; }
+    .register ul li:nth-child(3) {
+      width: 350px;
+      margin-top: 50px;
+      margin-bottom: 10px; }
+      .register ul li:nth-child(3) input {
+        height: 25px;
+        width: 293px;
+        font-size: 12px;
+        line-height: 25px;
+        padding: 6px 0 6px 6px;
+        color: #333333;
+        border: 1px solid #C8C8C8; }
+    .register ul li:nth-child(4) {
+      width: 350px; }
+      .register ul li:nth-child(4) input {
+        height: 25px;
+        width: 293px;
+        font-size: 12px;
+        line-height: 25px;
+        padding: 6px 0 6px 6px;
+        color: #333333;
+        border: 1px solid #C8C8C8; }
+    .register ul li:nth-child(5) {
+      width: 293px;
+      height: 46px;
+      line-height: 46px;
+      display: flex;
+      justify-content: space-between; }
+      .register ul li:nth-child(5) i {
+        font-family: "微软雅黑","宋体","arial","Hiragino Sans GB","Microsoft Yahei","Tahoma","Helvetica","STHeiti";
+        font-size: 12px; }
+        .register ul li:nth-child(5) i input {
+          margin-right: 5px; }
+      .register ul li:nth-child(5) a {
+        font-size: 12px;
+        color: #595959; }
+    .register ul li:nth-child(6) a {
+      width: 302px;
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+      color: #fff;
+      font-size: 14px;
+      font-family: "宋体";
+      background: #94193f;
+      display: block; }
+      .register ul li:nth-child(6) a:hover {
+        background: #A82045; }
+
+/*底部*/
+.foot {
+  height: 92px;
+  background: #f6f6f6;
+  width: 100%; }
+  .foot div {
+    width: 880px;
+    height: 92px;
+    margin: 0 auto;
+    font-size: 12px;
+    color: #999999; }
+    .foot div p {
+      padding: 10px 0; }
+    .foot div ul {
+      padding-bottom: 10px; }
+      .foot div ul li {
+        float: left; }
+        .foot div ul li span {
+          padding: 0 3px; }
+
+/*# sourceMappingURL=register.css.map */
